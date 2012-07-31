@@ -99,6 +99,9 @@
         
         var instance = this
             
+            // data source mode : custom (source in data-src-{breakpoint}) or normal (old way)
+          , inlineSourceMode = options.inlineSourceMode || 0
+            
             // Base path
           , base = options.base || EMPTYSTRING
             
@@ -205,7 +208,7 @@
             img[ONERROR] = imageOnerrorCallback;
                     
             // Load it    
-            img.src = getImageSrc(img, base, imgSize);
+            img.src = getImageSrc(img, base, imgSize, inlineSourceMode);
             
             // Reduce the images array for shorter loops
             images.splice(idx, 1);
@@ -234,7 +237,8 @@
             ONERROR in options && options[ONERROR][CALL](img); 
             if (img[RETRIES] < retries) {
                 img[RETRIES]++;
-                img.src = getImageSrc(img, base, imgSize, TRUE);
+                img.src = getImageSrc(img, base, imgSize, inlineSourceMode, TRUE);
+                
             } else {
                 // If an image fails to load consider it loaded.
                 onCompleteCallback();
@@ -362,6 +366,7 @@
      * Uses the viewport width to mimic CSS behavior.
      */
     function getSizeOfImages(breakpoints, vWidth, ignoreLowBandwidth) {
+      
         var imgSize = EMPTYSTRING
           , _vWidth = vWidth
           , i = 0
@@ -439,14 +444,23 @@
      * Returns the URL of an image
      * If reload is TRUE, a timestamp is added to avoid caching.
      */
-    function getImageSrc(img, base, imgSize, reload) {
-        var src = (img.getAttribute('data-base') || base) +
-            (img.getAttribute('data-src') || EMPTYSTRING);
+    function getImageSrc(img, base, imgSize, inlineSourceMode, reload) {
+        
+        // Test the data source mode : custom (source in data-src-{breakpoint}) or normal (old way)
+        if(inlineSourceMode){
+          var src = (img.getAttribute('data-base') || base) +
+              (img.getAttribute("data-src-" + imgSize) || EMPTYSTRING);
+          
+        }else{
+          var src = (img.getAttribute('data-base') || base) +
+              (img.getAttribute('data-src') || EMPTYSTRING);
+        }
         
         if (reload) {
             src += (QUESTION_MARK_REGEX.test(src) ? '&' : '?') + 
                 'riloadrts='+(new Date).getTime();
         }
+        
 
         return src.replace(BREAKPOINT_NAME_REGEX, imgSize);    
     }

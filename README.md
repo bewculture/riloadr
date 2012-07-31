@@ -600,6 +600,27 @@ If `root` is not set or can't be found, it falls back to the `body` element.
 
 ***
 
+### dataSourceMode (*String* | Optional)  
+You can specify an alternative way of indicating the source of responsives images.
+Let's say you have the following breakpoints :
+
+```js
+	breakpoints: [
+        {name: 'small', maxWidth: 400},
+        {name: 'medium', minWidth: 401, maxWidth: 640},
+        {name: 'big', minWidth: 641}
+    ]
+   
+```  
+Instead of looking for images in ```images/{breakpoint}/...```, you specify the path of each breakpoint in the tag :
+
+```html
+	<img data-src-small="PATH" data-src-medium="PATH" data-src-large="PATH" > 
+```
+with each breakpoint as a sufix : data-src-BREAKPOINT.
+
+Note : the jQuery version isn't updated with this feature yet.
+
 <a name="properties"></a>
 
 ## 2.2. Properties
